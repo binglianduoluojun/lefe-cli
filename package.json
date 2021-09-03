@@ -17,7 +17,7 @@
     "ora": "^3.2.0",
     "util": "^0.12.4"
   },
-  "description": "```js\r 传人lenovo仓库名称,根据提示进行选择....",
+  "description": "",
   "main": "index.js",
   "devDependencies": {},
   "scripts": {
@@ -25,15 +25,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/binglianduoluojun/lenovo-.git"
+    "url": "git+https://github.com/binglianduoluojun/lefe-cli.git"
   },
   "keywords": [
-    "lenovo-r-cli"
+    "lefe-cli"
   ],
   "author": "binglian",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/binglianduoluojun/lenovo-/issues"
+    "url": "https://github.com/binglianduoluojun/lefe-cli/issues"
   },
-  "homepage": "https://github.com/binglianduoluojun/lenovo-#readme"
+  "homepage": "https://github.com/binglianduoluojun/lefe-cli#readme"
 }
