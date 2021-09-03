@@ -1,0 +1,39 @@
+{
+  "name": "lefe-cli",
+  "version": "0.0.1",
+  "bin": {
+    "lefe": "bin/lefe.js",
+    "lefe-init": "bin/lefe-init.js"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^8.1.0",
+    "consolidate": "^0.16.0",
+    "download-git-repo": "^3.0.2",
+    "ejs": "^3.1.6",
+    "inquirer": "^8.1.2",
+    "metalsmith": "^2.3.0",
+    "ncp": "^2.0.0",
+    "ora": "^3.2.0",
+    "util": "^0.12.4"
+  },
+  "description": "```js\r 传人lenovo仓库名称,根据提示进行选择....",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "lenovo"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/binglianduoluojun/lenovo-.git"
+  },
+  "keywords": [
+    "lenovo-r-cli"
+  ],
+  "author": "binglian",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/binglianduoluojun/lenovo-/issues"
+  },
+  "homepage": "https://github.com/binglianduoluojun/lenovo-#readme"
+}
