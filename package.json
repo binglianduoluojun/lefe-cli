@@ -21,7 +21,7 @@
   "main": "index.js",
   "devDependencies": {},
   "scripts": {
-    "test": "lenovo"
+    "test": "lefe"
   },
   "repository": {
     "type": "git",
