@@ -22,7 +22,8 @@ const list = [
   {
     type: 'input',
     name: 'name',
-    message: '模板仓库名字 格式 xxxx/xxxx',
+    message:
+      '模板仓库名字 格式 http://00.000.000.00:0000/binglian/lefe-cli.git \n 必须使用数字IP',
   },
   {
     type: 'input',
@@ -53,8 +54,7 @@ const pull = (site, downloadPath) => {
 
   // 第二步 拉取仓库代码
   download(
-    `direct:http://10.106.249.15:7070/${site.name}.git`, // 地址
-    // `direct:http://10.106.249.15:7070/liul/saas.git#common`,
+    `direct:${site.name}`, // 地址
     `${downloadPath}`, // 保存路径
     { clone: true },
     function (err) {
