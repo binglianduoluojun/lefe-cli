@@ -20,9 +20,9 @@ lefe init
 根据提示进行操作
 
 仓库地址可以使用数字IP,查看数字IP可以登录仓库,查看控制台Network里,
-例:http://10.106.249.15:7070/lefe/vue-template.git
+例:http://00.000.000.00:0000/lefe/vue-template.git
 可以指定分支,后面加 #分支名
-例:http://shgit.lenovo.com:7070/lefe/vue-template.git#分支名
+例:http://gitlab.com/lefe/vue-template.git#分支名
 
 仓库中有sdk.js文件可以进行编译
 仓库中没有sdk.js文件会直接复制到当前文件夹

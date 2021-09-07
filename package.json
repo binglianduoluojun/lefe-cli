@@ -1,6 +1,6 @@
 {
   "name": "lefe-cli",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "bin": {
     "lefe": "bin/lefe.js",
     "lefe-init": "bin/lefe-init.js"
