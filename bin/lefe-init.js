@@ -3,10 +3,9 @@
 const Metalsmith = require('metalsmith'); // 读取文件
 const path = require('path');
 const fs = require('fs');
-const exec = require('child_process').exec; // 输出命令行
-
+// const exec = require('child_process').exec; // 输出命令行
 const { promisify } = require('util');
-const inquirer = require('inquirer'); // 互动效果
+const inquirer = require('inquirer'); // 交互式命令行
 let { render } = require('consolidate').ejs; // 编译文件
 render = promisify(render);
 const chalk = require('chalk'); // 修改提示文字颜色
@@ -22,8 +21,7 @@ const list = [
   {
     type: 'input',
     name: 'name',
-    message:
-      '模板仓库名字 格式 http://00.000.000.00:0000/binglian/lefe-cli.git \n 必须使用数字IP',
+    message: '模板仓库http地址',
   },
   {
     type: 'input',
@@ -40,12 +38,11 @@ const configFile = `${
 // 用户交互函数,需要数组
 const userImport = async list => {
   const info = await inquirer.prompt(list);
+
   // console.log(info);
   return info;
 };
 
-// 10.106.249.15:7070
-// pull binglian/vue-temp.git
 // 拉取仓库函数 site 仓库名 downloadPath 缓存路径
 const pull = (site, downloadPath) => {
   const spinner = ora('获取模板中......').start(); // 第二步 打开loding
@@ -59,7 +56,6 @@ const pull = (site, downloadPath) => {
     { clone: true },
     function (err) {
       //失败回调
-      // console.log(err);
       if (('' + err).indexOf('status 128') !== -1) {
         spinner.fail('错误128 仓库名称不对或者其它原因'); // 关闭loding 提示失败
         console.log(err);
@@ -76,7 +72,6 @@ const pull = (site, downloadPath) => {
         spinner.succeed('获取成功'); // 关闭loding 提示成功
         ask(site, downloadPath); // 第三步 编译文件
       }
-      // console.log(is === -1 ? 'Error' : 'Success');
     }
   );
 };
@@ -86,7 +81,7 @@ const ask = (name, downloadPath) => {
   const is = fs.existsSync(`${downloadPath}/ask.js`); // 判断有没有sdk.js
   // 没有ask文件说明不需要编译
   if (!is) {
-    console.log('没有sdk.js默认拷贝到当前文件夹');
+    console.log('没有ask.js默认拷贝到当前文件夹');
     // 将下载的文件拷贝到当前执行命令的目录下
     ncp(downloadPath, path.join(path.resolve(), name.folder)).then(() => {
       deleteFolder(downloadPath); // 删除缓存
@@ -100,7 +95,6 @@ const ask = (name, downloadPath) => {
       // 读取文件;
       Metalsmith(__dirname)
         .source(downloadPath) // 读取路径
-        // .source('C:/Users/.template')
         .destination(path.resolve(name.folder)) // 输出路径
         // use 中间件
         .use(async (files, metal, done) => {
@@ -129,42 +123,11 @@ const ask = (name, downloadPath) => {
         .build(async err => {
           // 第四步 项目创建成功
           if (!err) {
-            // deleteFolder(`${path.resolve(name.folder)}/.git`); // 删除 .git 文件夹
             deleteFolder(downloadPath); // 删除缓存文件夹
-            // 询问是否安装依赖
-            const { is } = await userImport([
-              {
-                type: 'confirm',
-                name: 'is',
-                message: '是否安装依赖?',
-              },
-            ]);
-
-            if (is) {
-              // 选择安装依赖分支
-              const spinner = ora('安装依赖中......').start(); // loding
-              let cmdStr = `cd ${name.folder} && npm i`;
-              // 执行指令
-              exec(cmdStr, async (error, stdout, stderr) => {
-                if (error) {
-                  // 指令执行失败
-                  console.log(error);
-                  spinner.fail(
-                    `安装依赖失败 建议 \n cd ${name.folder} \n npm i`
-                  );
-                  resolve();
-                }
-                console.log('\n stdot:' + stdout);
-                console.log('stderr:' + stderr);
-                spinner.stop(); // 关闭loding
-                chalkSuccess(`请执行 \n cd ${name.folder} npm run serve`); //成功提示
-                resolve();
-              });
-            } else {
-              // 不安装依赖分支
-              chalkSuccess(`创建项目成功 请执行 \n cd ${name.folder} \n npm i`);
-              resolve();
-            }
+            chalkSuccess(
+              `创建项目成功 请执行 \n cd ${name.folder} \n npm i \n npm run serve`
+            );
+            resolve();
           } else {
             // 创建项目失败
             chalkError('创建项目失败 文件夹已存在或者其它原因'); // 失败提示
