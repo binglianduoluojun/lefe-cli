@@ -1,6 +1,6 @@
 ### lefe-cli 
 
-```js
+```
 这是一个内部使用的简易的脚手架
 
 它就是个工具，方便我们新建项目用的，有了这个项目我们就能直接开发了。脚手架的本质也是从远程下载一个模板来进行一个新项目。脚手架可是高级版的克隆，它主要是提供了交互式的命令让我们可以动态的更改模板，然后用一句命令就可以一劳永逸了（当然还是要维护的），这应该是最主要的区别。
@@ -12,17 +12,49 @@
 npm i lefe-cli -g
 ```
 
-### 用法
+### 用法-指令
 
-```js
-lefe init
+#### 添加模板地址指令 lefe add
 
-根据提示进行操作
+```
+left add 
 
-仓库地址可以使用数字IP,查看数字IP可以登录仓库,查看控制台Network里,
+? 请输入模板名称 name
+? 请输入模板地址 http仓库地址url
+
+如果仓库http地址无法使用报错128,可以使用数字IP,查看数字IP可以登录仓库,查看控制台Network里,
 例:http://00.000.000.00:0000/lefe/vue-template.git
 可以指定分支,后面加 #分支名
-例:http://gitlab.com/lefe/vue-template.git#分支名
+例:http://gitlab.lefe.com:7070/lefe/vue-template.git#分支名
+```
+
+#### 删除模板地址指令 lefe delete
+
+```
+lefe delete name
+
+name 参数是模板名称
+```
+
+#### 查看模板列表指令 lefe list
+
+```
+lefe list
+
+会在控制台输入模板列表
+```
+
+#### 初始化模板项目指令 lefe init
+
+```
+lefe init <template-name> [folder-name]
+
+参数<template-name>:模板名称 (必须)
+参数[folder-name]:要创建的项目文件夹名称 (必须)
+例: lefe init name name
+
+执行 init 指令前,需要执行 add 指令添加地址
+根据提示进行操作
 
 仓库中有sdk.js文件可以进行编译
 仓库中没有sdk.js文件会直接复制到当前文件夹
@@ -40,7 +72,7 @@ lefe init 下来的文件夹没有.git文件夹,不关联仓库
 
 ### 配置模板
 
-```js
+```
 模板中需要提供 ask.js 文件,和 <%=占位符%> ,才能进行编译
 
 例:
@@ -161,17 +193,17 @@ Error: 'git clone' failed with status 128
 	2.本地缓存同名文件夹没有清除
 	
 Error: 'git checkout' failed with status 1
-  缓存代码已经拉取下来了
+  缓存代码已经拉取下来了,算成功
 ```
 
 ### 缓存文件位置
 
-```js
+```
 mac 为环境变量 HOME 下.temp文件夹
 windows 为环境变量 TEMP 下 .temp文件夹
 
 // 获取缓存路径
-const configFile = `${
+const cachePath = `${
   process.env[process.platform === 'darwin' ? 'HOME' : 'TEMP']
 }/.temp`;
 ```

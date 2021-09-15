@@ -3,6 +3,7 @@
 const Metalsmith = require('metalsmith'); // 读取文件
 const path = require('path');
 const fs = require('fs');
+const program = require('commander'); // 处理命令行的
 // const exec = require('child_process').exec; // 输出命令行
 const { promisify } = require('util');
 const inquirer = require('inquirer'); // 交互式命令行
@@ -15,87 +16,87 @@ const chalkError = text => console.log(chalk.red(text)); // 失败提示
 let ncp = require('ncp'); // 拷贝
 ncp = promisify(ncp);
 const download = require('download-git-repo'); // 拉取仓库插件
-
-// 用户交互数组
-const list = [
-  {
-    type: 'input',
-    name: 'name',
-    message: '模板仓库http地址',
-  },
-  {
-    type: 'input',
-    name: 'folder',
-    message: '创建文件夹名字',
-  },
-];
+const tplObj = require(`${__dirname}/../template`); // 获取仓库地址
 
 // 获取缓存路径
-const configFile = `${
+const cachePath = `${
   process.env[process.platform === 'darwin' ? 'HOME' : 'TEMP']
 }/.temp`;
 
-// 用户交互函数,需要数组
-const userImport = async list => {
-  const info = await inquirer.prompt(list);
+// 处理命令行参数
+program.usage('<template-name> [folder-name]');
+program.parse(process.argv);
 
-  // console.log(info);
-  return info;
-};
+// 当没有输入参数的时候给个提示
+if (program.args.length < 1) return program.help();
 
-// 拉取仓库函数 site 仓库名 downloadPath 缓存路径
-const pull = (site, downloadPath) => {
-  const spinner = ora('获取模板中......').start(); // 第二步 打开loding
-  // console.log(downloadPath);
-  // console.log(site);
+// 获取命令行参数
+const templateName = program.args[0];
+const folderName = program.args[1];
 
-  // 第二步 拉取仓库代码
-  download(
-    `direct:${site.name}`, // 地址
-    `${downloadPath}`, // 保存路径
-    { clone: true },
-    function (err) {
-      //失败回调
-      if (('' + err).indexOf('status 128') !== -1) {
-        spinner.fail('错误128 仓库名称不对或者其它原因'); // 关闭loding 提示失败
-        console.log(err);
-        deleteFolder(downloadPath); // 失败删除缓存
-      } else if (('' + err).indexOf('status 1') !== -1) {
-        // 这个错误代码已经拉到本地了,签出错误,影响不大,算成功
-        spinner.succeed('获取成功'); // 关闭loding 提示成功
-        ask(site, downloadPath); // 第三步 编译文件
-      } else if (err) {
-        spinner.fail('获取失败'); // 关闭loding 提示失败
-        console.log(err);
-        deleteFolder(downloadPath);
-      } else {
-        spinner.succeed('获取成功'); // 关闭loding 提示成功
-        ask(site, downloadPath); // 第三步 编译文件
-      }
+// 校验一下参数
+if (!tplObj[templateName]) {
+  console.log(chalk.red('\n Template does not exit! \n '));
+  return;
+}
+if (!folderName) {
+  console.log(chalk.red('\n folder should not be empty! \n '));
+  return;
+}
+
+const url = tplObj[templateName]; // 获取仓库地址 url
+
+console.log(chalk.white('\n Start generating... \n'));
+
+// 打开loding
+const spinner = ora('获取模板中......').start();
+
+// 拉取仓库代码
+download(
+  `direct:${url}`, // 地址
+  `${cachePath}`, // 保存路径
+  { clone: true },
+  function (err) {
+    //失败回调
+    if (('' + err).indexOf('status 128') !== -1) {
+      spinner.fail('错误128 仓库名称不对或者其它原因 \n'); // 关闭loding 提示失败
+      console.log(err);
+      deleteFolder(cachePath); // 失败删除缓存
+    } else if (('' + err).indexOf('status 1') !== -1) {
+      // 这个错误代码已经拉到本地了,签出错误,影响不大,算成功
+      spinner.succeed('获取成功 \n'); // 关闭loding 提示成功
+      ask(folderName, cachePath); // 编译文件
+    } else if (err) {
+      spinner.fail('获取失败 \n'); // 关闭loding 提示失败
+      console.log(err);
+      deleteFolder(cachePath);
+    } else {
+      spinner.succeed('获取成功 \n'); // 关闭loding 提示成功
+      ask(folderName, cachePath); // 编译文件
     }
-  );
-};
+  }
+);
+// };
 
-// 编译文件函数 name 文件夹名字 downloadPath 缓存文件路径
-const ask = (name, downloadPath) => {
-  const is = fs.existsSync(`${downloadPath}/ask.js`); // 判断有没有sdk.js
+// 编译文件函数 folderName 文件夹名字 cachePath 缓存文件路径
+const ask = (folderName, cachePath) => {
+  const is = fs.existsSync(`${cachePath}/ask.js`); // 判断有没有sdk.js
   // 没有ask文件说明不需要编译
   if (!is) {
     console.log('没有ask.js默认拷贝到当前文件夹');
     // 将下载的文件拷贝到当前执行命令的目录下
-    ncp(downloadPath, path.join(path.resolve(), name.folder)).then(() => {
-      deleteFolder(downloadPath); // 删除缓存
-      chalkSuccess(`创建项目成功 请执行 \n cd ${name.folder} \n npm i`);
+    ncp(cachePath, path.join(path.resolve(), folderName)).then(() => {
+      deleteFolder(cachePath); // 删除缓存
+      chalkSuccess(`\n 创建项目成功 请执行 \n cd ${folderName} \n npm i`);
     });
   } else {
     // 有sdk.js 编译文件夹
-    const askUrl = path.join(downloadPath, 'ask.js'); // 拿到ask里的数组
-    // console.log(askUrl);
+    const askUrl = path.join(cachePath, 'ask.js'); // 拿到ask里的数组
     new Promise((resolve, reject) => {
       // 读取文件;
       Metalsmith(__dirname)
-        .source(downloadPath) // 读取路径
-        .destination(path.resolve(name.folder)) // 输出路径
+        .source(cachePath) // 读取路径
+        .destination(path.resolve(folderName)) // 输出路径
         // use 中间件
         .use(async (files, metal, done) => {
           const result = await inquirer.prompt(require(askUrl)); // 用户交互填写
@@ -121,16 +122,16 @@ const ask = (name, downloadPath) => {
           done();
         })
         .build(async err => {
-          // 第四步 项目创建成功
           if (!err) {
-            deleteFolder(downloadPath); // 删除缓存文件夹
+            // 项目创建成功
+            deleteFolder(cachePath); // 删除缓存文件夹
             chalkSuccess(
-              `创建项目成功 请执行 \n cd ${name.folder} \n npm i \n npm run serve`
+              `\n 创建项目成功 请执行 \n cd ${folderName} \n npm i \n npm run serve`
             );
             resolve();
           } else {
             // 创建项目失败
-            chalkError('创建项目失败 文件夹已存在或者其它原因'); // 失败提示
+            chalkError('\n 创建项目失败 文件夹已存在或者其它原因'); // 失败提示
             reject();
           }
         });
@@ -154,12 +155,3 @@ function deleteFolder(path) {
     fs.rmdirSync(path);
   }
 }
-
-// 执行循序
-const compile = async () => {
-  const info = await userImport(list); // 第一步 获取仓库等信息
-  // console.log(info);
-  pull(info, configFile); // 第二步 拉取模板
-};
-
-compile();

@@ -1,9 +1,12 @@
 {
   "name": "lefe-cli",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "bin": {
     "lefe": "bin/lefe.js",
-    "lefe-init": "bin/lefe-init.js"
+    "lefe-init": "bin/lefe-init.js",
+    "lefe-add": "bin/lefe-add.js",
+    "lefe-list": "bin/lefe-list.js",
+    "lefe-delete": "bin/lefe-delete.js"
   },
   "dependencies": {
     "chalk": "^4.1.2",

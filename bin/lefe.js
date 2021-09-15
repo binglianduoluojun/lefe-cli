@@ -6,6 +6,9 @@ const program = require('commander');
 program
   .version(require('../package').version)
   .usage('<command> [options]')
+  .command('add', 'add a new template')
+  .command('delete', 'delete a template')
+  .command('list', 'list all the templates')
   .command('init', 'generate a new project from a template');
 
 // 解析命令行参数
