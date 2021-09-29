@@ -117,6 +117,10 @@ const ask = (folderName, cachePath) => {
                 files[file].contents = Buffer.from(content); // 渲染好的结果替换即可
               }
             }
+            // 清空 README.md
+            if (file.includes('README.md')) {
+              files[file].contents = '';
+            }
           });
           // 不能少
           done();
